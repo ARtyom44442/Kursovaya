@@ -3,44 +3,85 @@
 #include <ctime>
 #include <cstdlib>
 
-Order::Order(int id, int w, int v, coords d, int mt): ID(id), weight(w), vol(v), destination(d), max_time(mt) {
+Order::Order(int id, float w, float v, coords d, int mt): ID(id), weight(w), vol(v), destination(d), max_time(mt) {
 
 }
 
-void setRandID(int* id) {
-    *id = rand() % 90000 + 10000; 
+void Order::setWeight(float w) {
+    if (w > 0) {
+        weight = w;
+    }
 }
 
-void setWeight(int* w) {
+void Order::setVol(float v) {
+    if (v > 0) {
+        vol = v;
+    }
+}
+
+void Order::setDestination(coords d) {
+    destination = d;
+}
+
+void Order::setMaxTime(int mt) {
+    if (mt > 0) {
+        max_time = mt;
+    }
+}
+
+int generateID() {
+    return rand() % 90000 + 10000; 
+}
+
+float inputWeight() {
+    float w;
     while (true) {
-    std::cout << "Введите вес заказа: ";
-    std::cin >> *w;
-    if (*w <= 0) {
-        std::cout << "Введены неверные данные" << std::endl;
-    }
-    else { 
-        break;
-    }
+        std::cout << "Введите вес заказа: ";
+        std::cin >> w;
+        if (w <= 0) {
+            std::cout << "Введены неверные данные" << std::endl;
+        }
+        else { 
+            return w;
+        }
     }
 }
 
-void setVol(int* v) {
+float inputVol() {
+    float v;
     while (true) {
-    std::cout << "Введите обьем заказа: ";
-    std::cin >> *v;
-    if (*v <= 0) {
-        std::cout << "Введены неверные данные" << std::endl;
-    }
-    else { 
-        break;
-    }
+        std::cout << "Введите обьем заказа: ";
+        std::cin >> v;
+        if (v <= 0) {
+            std::cout << "Введены неверные данные" << std::endl;
+        }
+        else { 
+            return v;
+        }
     }
 }
 
-void setMaxTime(int *mt) {
-    std::cout << "Введите максимальное время доставки заказа (минуты): ";
-    std::cin >> *mt;
-    std::cout << std::endl;
+int inputMaxTime() {
+    int mt;
+    while (true){
+        std::cout << "Введите максимальное время доставки заказа (минуты): ";
+        std::cin >> mt;
+        if (mt <= 0) {
+            std::cout << "Введены неверные данные" << std::endl;
+        }
+        else {
+            return mt;
+        }
+    }
+}
+
+coords inputDestination() {
+    coords d;
+    std::cout << "Введите значение X координат места доставки: ";
+    std::cin >> d.x;
+    std::cout << "Введите значение Y координат места доставки: ";
+    std::cin >> d.y;
+    return d;
 }
 
 void Order::PrintStats() {
@@ -52,13 +93,16 @@ void Order::PrintStats() {
 }
 
 int main() {
-    int id, w, v, mt;
+    int id, mt;
+    float w, v;
     coords d = {0, 0};
     srand(time(0));
-    setRandID(&id);
-    setWeight(&w);
-    setVol(&v);
-    setMaxTime(&mt);
+    id = generateID();
+    w = inputWeight();
+    v = inputVol();
+    mt = inputMaxTime();
+    d = inputDestination();
     Order myOrder(id, w, v, d, mt);
+
     myOrder.PrintStats();
 }
