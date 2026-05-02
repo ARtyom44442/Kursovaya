@@ -88,7 +88,7 @@ void Order::PrintStats() {
     std::cout << "ID Закза: " << ID << std::endl;
     std::cout << "Вес: " << weight << std::endl;
     std::cout << "Обьем: " << vol << std::endl;
-    std::cout << "Координаты цели доставки: " << destination.x << destination.y << std::endl;
+    std::cout << "Координаты цели доставки: " << destination.x << ", " << destination.y << std::endl;
     std::cout << "Максимальное время доставки: " << max_time << std::endl;
 }
 

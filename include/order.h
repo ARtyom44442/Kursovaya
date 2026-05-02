@@ -15,8 +15,8 @@ public:
     Order(int id, float w, float v, coords d, int mt);
 
     int getID() { return ID; }
-    int getWeight() { return weight; }
-    int getVol() { return vol; }
+    float getWeight() { return weight; }
+    float getVol() { return vol; }
     int getMaxTime() { return max_time; }
     coords getDestination() { return destination; }
 
