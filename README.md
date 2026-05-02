@@ -1,1 +1,1 @@
-# Kursovaya
+Kursovaya
