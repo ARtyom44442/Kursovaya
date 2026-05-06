@@ -1,5 +1,6 @@
 #include "Truck.h"
 #include <cmath>
+// проверка на маленький груз(напоминалка, но это функция будет не тут)
 
 Truck::Truck(std::string& name, float s, float max_w, float max_v, coords pos) 
     : Transport(name, s, max_w, max_v, pos) {
