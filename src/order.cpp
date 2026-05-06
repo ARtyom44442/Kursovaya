@@ -1,4 +1,4 @@
-#include "/home/rexka/uncheba/kurs2sem/repo/Kursovaya/include/order.h" //это пофиксим .json файлом пока пох
+#include "order.h"
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
@@ -92,17 +92,17 @@ void Order::PrintStats() {
     std::cout << "Максимальное время доставки: " << max_time << std::endl;
 }
 
-int main() {
-    int id, mt;
-    float w, v;
-    coords d = {0, 0};
-    srand(time(0));
-    id = generateID();
-    w = inputWeight();
-    v = inputVol();
-    mt = inputMaxTime();
-    d = inputDestination();
-    Order myOrder(id, w, v, d, mt);
-
-    myOrder.PrintStats();
-}
+//int main() {
+  //  int id, mt;
+    //float w, v;
+//    coords d = {0, 0};
+//    srand(time(0));
+//    id = generateID();
+//    w = inputWeight();
+//    v = inputVol();
+ //   mt = inputMaxTime();
+//    d = inputDestination();
+//    Order myOrder(id, w, v, d, mt);
+//
+ //   myOrder.PrintStats();
+//}
