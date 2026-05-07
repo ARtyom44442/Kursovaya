@@ -1,8 +1,18 @@
 #include <iostream>
 #include <vector>
+#include <limits>
 #include "order.h"
 #include "datareader.h"
 #include "Transport.h"
+
+bool isValidInput(float w, float v, int x, int y, float t) {
+    if (w <= 0 || w > 10000) return false;
+    if (v <= 0 || v > 10000) return false;
+    if (x < 0 || x > 10000) return false;
+    if (y < 0 || y > 10000) return false;
+    if (t <= 0 || t > 10000) return false;
+    return true;
+}
 
 int main() {
 
@@ -10,52 +20,68 @@ int main() {
     std::vector<Transport*> fleet = reader.loadTransports("data/transports.json");
 
     if (fleet.empty()) {
-        std::cerr << "Критическая ошибка: Автопарк пуст! Проверьте файл data/transports.json\n";
+        std::cerr << "Ошибка: Автопарк пуст\n";
         return 1;
     }
-
-    std::cout << "Успешно загружено единиц транспорта: " << fleet.size() << "\n\n";
 
     int choice = -1;
     int order_counter = 1;
 
     while (true) {
-        std::cout << "ГЛАВНОЕ МЕНЮ\n";
-        std::cout << "1. Создать новый заказ и найти транспорт\n";
-        std::cout << "2. Посмотреть весь доступный транспорт\n";
-        std::cout << "0. Выход из программы\n";
-        std::cout << "Ваш выбор: ";
+        std::cout << "\nГЛАВНОЕ МЕНЮ\n";
+        std::cout << "1. Создать новый заказ\n";
+        std::cout << "2. Посмотреть доступный транспорт\n";
+        std::cout << "0. Выход\n";
+        std::cout << "Выбор: ";
         
         std::cin >> choice;
 
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            std::cout << "Неверный ввод\n";
+            continue;
+        }
+
         if (choice == 0) {
-            std::cout << "Завершение работы диспетчера...\n";
             break;
         }
         else if (choice == 2) {
             std::cout << "\nДОСТУПНЫЙ АВТОПАРК\n";
             for (Transport* t : fleet) {
-                std::cout << "- " << t->getname() << " (Скорость: " << t->getspeed() << ")\n";
+                std::cout << t->getname() << " (Скорость: " << t->getspeed() << ")\n";
             }
-            std::cout << "\n";
         }
         else if (choice == 1) {
-            // 3. Создание заказа (Интерактив)
-            float w, v;
+            float w, v, max_time;
             int x, y;
             
-            std::cout << "\nОФОРМЛЕНИЕ ЗАКАЗА #" << order_counter << "\n";
-            std::cout << "Введите вес (кг): ";
+            std::cout << "\nОФОРМЛЕНИЕ ЗАКАЗА\n";
+            std::cout << "Вес (кг): ";
             std::cin >> w;
-            std::cout << "Введите объем (м3): ";
+            std::cout << "Объем (м3): ";
             std::cin >> v;
-            std::cout << "Введите координату доставки X: ";
+            std::cout << "Макс. время доставки: ";
+            std::cin >> max_time;
+            std::cout << "Координата X: ";
             std::cin >> x;
-            std::cout << "Введите координату доставки Y: ";
+            std::cout << "Координата Y: ";
             std::cin >> y;
 
+            if (std::cin.fail()) {
+                std::cin.clear();
+                std::cin.ignore(10000, '\n');
+                std::cout << "Ошибка: Введены некорректные символы\n";
+                continue;
+            }
+
+            if (!isValidInput(w, v, x, y, max_time)) {
+                std::cout << "Ошибка: Введены неверные значения или превышен лимит (10000)\n";
+                continue;
+            }
+
             coords dest = {x, y};
-            Order newOrder(order_counter, w, v, dest, 120); 
+            Order newOrder(order_counter, w, v, dest, max_time); 
 
             std::cout << "\nРАСПРЕДЕЛЕНИЕ\n";
             
@@ -65,28 +91,28 @@ int main() {
             for (Transport* t : fleet) {
                 if (t->canHandle(newOrder)) {
                     float current_time = t->calculateTime(newOrder);
-                    std::cout << "[ОК] " << t->getname() << " справится за " << current_time << " ед. времени.\n";
+                    std::cout << t->getname() << " справится за " << current_time << "\n";
                     
                     if (current_time < best_time) {
                         best_time = current_time;
                         best_transport = t;
                     }
                 } else {
-                    std::cout << "[ОТКАЗ] " << t->getname() << " не подходит (ограничения).\n";
+                    std::cout << t->getname() << " не подходит\n";
                 }
             }
 
             if (best_transport != nullptr) {
-                std::cout << "\nРЕЗУЛЬТАТ: Заказ назначен на " << best_transport->getname() 
-                          << " (Ожидаемое время: " << best_time << ")\n\n";
+                std::cout << "\nРЕЗУЛЬТАТ: Назначено на " << best_transport->getname() 
+                          << " (Время: " << best_time << ")\n";
             } else {
-                std::cout << "\nВНИМАНИЕ: Нет доступного транспорта для такого заказа!\n\n";
+                std::cout << "\nВНИМАНИЕ: Нет доступного транспорта\n";
             }
             
             order_counter++;
         }
         else {
-            std::cout << "Неверный ввод. Попробуйте снова.\n\n";
+            std::cout << "Неверный ввод\n";
         }
     }
 
