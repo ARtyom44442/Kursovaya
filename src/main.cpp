@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <clocale>
 #include "order.h"
 #include "datareader.h"
 #include "Transport.h"
@@ -29,7 +30,8 @@ bool isLogicalChoice(std::string name, float w, int x, int y) {
 }
 
 int main() {
-    std::cout << "СИСТЕМА ДИСПЕТЧЕРИЗАЦИИ SMART LOGISTICS\n\n";
+
+    setlocale(LC_ALL, ".UTF8");
 
     DataReader reader;
     std::vector<Transport*> fleet = reader.loadTransports("data/transports.json");
@@ -104,7 +106,7 @@ int main() {
             float best_time = 999999.0;
 
             for (Transport* t : fleet) {
-                
+
                 if (!isLogicalChoice(t->getname(), w, x, y)) {
                     std::cout << t->getname() << " не подходит (нерентабельно)\n";
                     continue;
