@@ -14,7 +14,22 @@ bool isValidInput(float w, float v, int x, int y, float t) {
     return true;
 }
 
+bool isLogicalChoice(std::string name, float w, int x, int y) {
+    float dist = std::sqrt(x * x + y * y);
+    bool isTruck = (name.find("Truck") != std::string::npos);
+    
+    if (dist < 500 && w <= 15 && isTruck) {
+        return false;
+    }
+    if (dist < 150 && isTruck) {
+        return false;
+    }
+    
+    return true;
+}
+
 int main() {
+    std::cout << "СИСТЕМА ДИСПЕТЧЕРИЗАЦИИ SMART LOGISTICS\n\n";
 
     DataReader reader;
     std::vector<Transport*> fleet = reader.loadTransports("data/transports.json");
@@ -89,8 +104,20 @@ int main() {
             float best_time = 999999.0;
 
             for (Transport* t : fleet) {
+                
+                if (!isLogicalChoice(t->getname(), w, x, y)) {
+                    std::cout << t->getname() << " не подходит (нерентабельно)\n";
+                    continue;
+                }
+
                 if (t->canHandle(newOrder)) {
                     float current_time = t->calculateTime(newOrder);
+                    
+                    if (current_time > max_time) {
+                        std::cout << t->getname() << " не успеет (расчетное время: " << current_time << " > " << max_time << ")\n";
+                        continue;
+                    }
+
                     std::cout << t->getname() << " справится за " << current_time << "\n";
                     
                     if (current_time < best_time) {
