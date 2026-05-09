@@ -1,3 +1,0 @@
-C:/kurs/Kursovaya-rexka-justtest/build/CMakeFiles/my_app.dir
-C:/kurs/Kursovaya-rexka-justtest/build/CMakeFiles/edit_cache.dir
-C:/kurs/Kursovaya-rexka-justtest/build/CMakeFiles/rebuild_cache.dir
