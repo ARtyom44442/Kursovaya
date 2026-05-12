@@ -11,15 +11,27 @@
   },
   {
     "type": "courier",
+    "name": "On_Foot",
+    "speed": 6.0,
+    "max_weight": 10.0,
+    "max_vol": 2.0,
+    "x": 0,
+    "y": 0,
+    "radius": 6.0,
+    "hourly_rate": 14.0,
+    "base_fee": 3.0
+  },
+  {
+    "type": "courier",
     "name": "Bike",
     "speed": 20.0,
     "max_weight": 15.0,
     "max_vol": 2.0,
     "x": 0,
     "y": 0,
-    "radius": 10.0,
-    "hourly_rate": 500.0,
-    "base_fee": 150.0
+    "radius": 12.0,
+    "hourly_rate": 20.0,
+    "base_fee": 4.0
   },
   {
     "type": "truck",
