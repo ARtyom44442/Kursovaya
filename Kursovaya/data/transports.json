@@ -17,7 +17,9 @@
     "max_vol": 2.0,
     "x": 0,
     "y": 0,
-    "radius": 10.0
+    "radius": 10.0,
+    "hourly_rate": 500.0,
+    "base_fee": 150.0
   },
   {
     "type": "truck",

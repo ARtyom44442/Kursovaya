@@ -18,6 +18,7 @@ public:
 
     virtual bool canHandle(Order& order);
     virtual float calculateTime(Order& order);
+    virtual float calculatePrice(Order& order) { return 0.0f; };
 
     std::string getname() { return type_name; }
     float getspeed() { return speed; }

@@ -178,6 +178,8 @@ int main() {
             if (best_transport != nullptr) {
                 std::cout << "\nРЕЗУЛЬТАТ: Назначено на " << best_transport->getname() 
                           << " (Время: " << formatTime(best_time) << ")\n";
+                float price = best_transport->calculatePrice(newOrder);
+                std::cout << "Стоимость доставки: " << price << " руб.\n";
             } else {
                 std::cout << "\nВНИМАНИЕ: Нет доступного транспорта для этого заказа\n";
             }
