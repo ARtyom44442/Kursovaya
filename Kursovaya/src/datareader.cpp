@@ -27,7 +27,9 @@ std::vector<Transport*> DataReader::loadTransports(const std::string& filename) 
 
         if (type == "drone") {
             float battery = item["battery"];
-            fleet.push_back(new Drone(name, speed, max_w, max_v, pos, battery));
+            float delivery_rate = item.value("delivery_rate", 150.0f);  
+            float charge_rate   = item.value("charge_rate", 25.0f);
+            fleet.push_back(new Drone(name, speed, max_w, max_v, pos, battery, delivery_rate, charge_rate));
         } 
         else if (type == "courier") {
             float radius = item["radius"];

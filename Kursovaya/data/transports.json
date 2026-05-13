@@ -7,7 +7,9 @@
     "max_vol": 0.5,
     "x": 0,
     "y": 0,
-    "battery": 120.0
+    "battery": 120.0,
+    "delivery_rate": 40.0,
+    "charge_rate": 3.0
   },
   {
     "type": "courier",
