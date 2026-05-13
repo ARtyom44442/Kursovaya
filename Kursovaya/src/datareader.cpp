@@ -38,7 +38,9 @@ std::vector<Transport*> DataReader::loadTransports(const std::string& filename) 
             fleet.push_back(new Courier(name, speed, max_w, max_v, pos, radius, hourly_rate, base_fee));
         }
         else if (type == "truck") {
-            fleet.push_back(new Truck(name, speed, max_w, max_v, pos));
+            float delivery_rate = item.value("delivery_rate", 150.0f);
+            float fuel_rate = item.value("fuel_rate", 25.0f);
+            fleet.push_back(new Truck(name, speed, max_w, max_v, pos, delivery_rate, fuel_rate));
         }
     }
 

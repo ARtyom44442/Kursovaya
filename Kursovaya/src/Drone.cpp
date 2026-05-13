@@ -14,7 +14,7 @@ float Drone::calculatePrice(Order& order) {
     float oneWayTime = calculateTime(order);        
     float totalFlightTime = oneWayTime * 2;         
     float orderCost = order.getWeight() * 100.0f;   
-    float wear_cost = 0.002f * orderCost;
+    float wear_cost = 0.004f * orderCost;
 
     return delivery_rate * oneWayTime + charge_rate * totalFlightTime + wear_cost;
 }
