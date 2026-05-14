@@ -156,23 +156,28 @@ int main() {
                     continue;
                 }
 
-                if (t->canHandle(newOrder)) {
-                    float current_time = t->calculateTime(newOrder);
-                    
-                    if (current_time > max_time) {
-                        std::cout << t->getname() << " не успеет (нужно: " << formatTime(current_time) << ")\n";
-                        continue;
-                    }
-
-                    std::cout << t->getname() << " справится за " << formatTime(current_time) << "\n";
-                    
-                    if (current_time < best_time) {
-                        best_time = current_time;
-                        best_transport = t;
-                    }
-                } else {
-                    std::cout << t->getname() << " не подходит по габаритам\n";
+                if(!t->canHandle(newOrder)){
+                    std::cout << t->getname() << " не подходит (нерентабельно)\n";
+                    continue;
                 }
+                float current_time = t->calculateTime(newOrder);
+                if (current_time > max_time) {
+                    std::cout << t->getname() << " не успеет (нужно: "
+                            << formatTime(current_time) << ")\n";
+                    continue;
+                }
+                float current_price = t->calculatePrice(newOrder);
+
+                std::cout << t->getname() << " справится за " << formatTime(current_time)
+              << " (Цена: " << std::fixed << std::setprecision(2)
+              << current_price << " руб.)\n";
+
+   
+                if (current_time < best_time) {
+                    best_time = current_time;
+                    best_transport = t;
+                }
+
             }
 
             if (best_transport != nullptr) {
