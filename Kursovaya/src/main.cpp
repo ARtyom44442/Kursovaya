@@ -14,6 +14,34 @@
 
 const float PROXIMITY_THRESHOLD = 50.0f;
 
+// ---------- ДОБАВЛЕННАЯ ФУНКЦИЯ СТРАТЕГИИ БЫСТРОЙ ДОСТАВКИ ----------
+// Стратегия поиска максимально быстрого транспорта для доставки заказа
+// Приоритет скорости: игнорируем экономическую нецелесообразность, используем самый быстрый подходящий транспорт
+Transport* findFastestTransport(const std::vector<Transport*>& fleet, const Order& order) {
+    Transport* best = nullptr;
+    float bestTime = std::numeric_limits<float>::max();
+
+    for (Transport* t : fleet) {
+        // Проверяем, может ли транспорт перевезти заказ по весу и объёму
+        if (!t->canHandle(const_cast<Order&>(order)))  // canHandle требует неконстантную ссылку
+            continue;
+
+        // Время доставки с учётом особенностей транспорта (трафик для грузовиков, батарея для дронов и т.д.)
+        float timeNeeded = t->calculateTime(const_cast<Order&>(order));
+
+        // Учитываем максимально допустимое время заказа
+        if (timeNeeded > order.getMaxTime())
+            continue;
+
+        if (timeNeeded < bestTime) {
+            bestTime = timeNeeded;
+            best = t;
+        }
+    }
+    return best;
+}
+// --------------------------------------------------------------------
+
 bool isValidInput(float w, float v, int x, int y, float t) {
     if (w <= 0 || w > 10000) return false;
     if (v <= 0 || v > 10000) return false;
@@ -70,9 +98,9 @@ bool areOrdersClose(const std::vector<Order>& orders, float threshold) {
 
 struct RouteInfo {
     Transport* transport;
-    std::vector<int> orderIndices;      
-    std::vector<float> arrivalTimes;    
-    float totalTime;                    
+    std::vector<int> orderIndices;
+    std::vector<float> arrivalTimes;
+    float totalTime;
 };
 
 bool buildRoute(Transport* t, const std::vector<Order>& orders, RouteInfo& route) {
@@ -192,7 +220,7 @@ int main() {
 
     int choice = -1;
     int order_counter = 1;
-    std::vector<Order> groupOrders;   
+    std::vector<Order> groupOrders;
 
     while (true) {
         std::cout << "\nГЛАВНОЕ МЕНЮ\n";
@@ -200,6 +228,7 @@ int main() {
         std::cout << "2. Посмотреть доступный транспорт\n";
         std::cout << "3. Добавить заказ в группу\n";
         std::cout << "4. Выполнить группировку и доставку\n";
+        std::cout << "5. Быстрая доставка (приоритет скорости)\n";   // НОВЫЙ ПУНКТ
         std::cout << "0. Выход\n";
         std::cout << "Выбор: ";
 
@@ -271,8 +300,67 @@ int main() {
         }
         else if (choice == 4) {
             performGroupDelivery(fleet, groupOrders);
-            groupOrders.clear();   
+            groupOrders.clear();
         }
+        // НОВЫЙ ОБРАБОТЧИК ДЛЯ ПУНКТА 5
+        else if (choice == 5) {
+            float w, v, max_time;
+            int x, y;
+
+            std::cout << "\n=== БЫСТРАЯ ДОСТАВКА (ПРИОРИТЕТ СКОРОСТИ) ===\n";
+            std::cout << "Вес (кг): ";
+            if (!(std::cin >> w) || w <= 0 || w > 10000) {
+                std::cin.clear();
+                std::cin.ignore(10000, '\n');
+                std::cout << "Ошибка: вес должен быть от 0 до 10000\n";
+                continue;
+            }
+            std::cout << "Объем (м3): ";
+            if (!(std::cin >> v) || v <= 0 || v > 10000) {
+                std::cin.clear();
+                std::cin.ignore(10000, '\n');
+                std::cout << "Ошибка: объём должен быть от 0 до 10000\n";
+                continue;
+            }
+            std::cout << "Макс. время доставки (часы): ";
+            if (!(std::cin >> max_time) || max_time <= 0 || max_time > 10000) {
+                std::cin.clear();
+                std::cin.ignore(10000, '\n');
+                std::cout << "Ошибка: время должно быть от 0 до 10000\n";
+                continue;
+            }
+            std::cout << "Координата X: ";
+            if (!(std::cin >> x) || x < 0 || x > 10000) {
+                std::cin.clear();
+                std::cin.ignore(10000, '\n');
+                std::cout << "Ошибка: X от 0 до 10000\n";
+                continue;
+            }
+            std::cout << "Координата Y: ";
+            if (!(std::cin >> y) || y < 0 || y > 10000) {
+                std::cin.clear();
+                std::cin.ignore(10000, '\n');
+                std::cout << "Ошибка: Y от 0 до 10000\n";
+                continue;
+            }
+
+            coords dest = { x, y };
+            int max_time_minutes = static_cast<int>(max_time * 60);
+            Order newOrder(order_counter, w, v, dest, max_time_minutes);
+
+            Transport* fastest = findFastestTransport(fleet, newOrder);
+            if (fastest != nullptr) {
+                float timeNeeded = fastest->calculateTime(newOrder);
+                std::cout << "\nРЕЗУЛЬТАТ (стратегия «максимальная скорость»):\n";
+                std::cout << "Назначен транспорт: " << fastest->getname() << "\n";
+                std::cout << "Время доставки: " << formatTime(timeNeeded) << "\n";
+            }
+            else {
+                std::cout << "\nНет подходящего транспорта для этого заказа.\n";
+            }
+            order_counter++;
+        }
+        // КОНЕЦ НОВОГО ОБРАБОТЧИКА
         else if (choice == 1) {
             float w, v, max_time;
             int x, y;
