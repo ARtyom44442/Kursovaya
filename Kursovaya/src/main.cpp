@@ -347,73 +347,89 @@ int main() {
             }
             order_counter++;
         }
-        else if (choice == 1) {
+       else if (choice == 1) {
             float w, v, max_time;
             int x, y;
             
-            std::cout << "\nОФОРМЛЕНИЕ ЗАКАЗА\n";
-
+            std::cout << "\n=== ОФОРМЛЕНИЕ ЗАКАЗА ===\n";
             std::cout << "Вес (кг): ";
-            if (!(std::cin >> w) || w < 0) {
+            if (!(std::cin >> w) || w <= 0 || w > 10000) {
                 std::cin.clear();
                 std::cin.ignore(10000, '\n');
-                std::cout << "Ошибка: Вес не может быть отрицательным или текстом\n";
+                std::cout << "Ошибка: вес должен быть от 0 до 10000\n";
                 continue;
             }
-
             std::cout << "Объем (м3): ";
-            if (!(std::cin >> v) || v < 0) {
+            if (!(std::cin >> v) || v <= 0 || v > 10000) {
                 std::cin.clear();
                 std::cin.ignore(10000, '\n');
-                std::cout << "Ошибка: Объем не может быть отрицательным или текстом\n";
+                std::cout << "Ошибка: объём должен быть от 0 до 10000\n";
                 continue;
             }
-
             std::cout << "Макс. время доставки (часы): ";
-            if (!(std::cin >> max_time) || max_time < 0) {
+            if (!(std::cin >> max_time) || max_time <= 0 || max_time > 10000) {
                 std::cin.clear();
                 std::cin.ignore(10000, '\n');
-                std::cout << "Ошибка: Время не может быть отрицательным или текстом\n";
+                std::cout << "Ошибка: время должно быть от 0 до 10000\n";
                 continue;
             }
-
             std::cout << "Координата X: ";
-            if (!(std::cin >> x) || x < 0) {
+            if (!(std::cin >> x) || x < 0 || x > 10000) {
                 std::cin.clear();
                 std::cin.ignore(10000, '\n');
-                std::cout << "Ошибка: Координата X не может быть отрицательной\n";
+                std::cout << "Ошибка: X от 0 до 10000\n";
                 continue;
             }
-
             std::cout << "Координата Y: ";
-            if (!(std::cin >> y) || y < 0) {
+            if (!(std::cin >> y) || y < 0 || y > 10000) {
                 std::cin.clear();
                 std::cin.ignore(10000, '\n');
-                std::cout << "Ошибка: Координата Y не может быть отрицательной\n";
+                std::cout << "Ошибка: Y от 0 до 10000\n";
                 continue;
             }
 
-            if (!isValidInput(w, v, x, y, max_time)) {
-                std::cout << "Ошибка: Превышен лимит (10000)\n";
-                continue;
-            }
-
-            coords dest = {x, y};
+            
+            coords dest = { x, y };
             int max_time_minutes = static_cast<int>(max_time * 60);
             Order newOrder(order_counter, w, v, dest, max_time_minutes);
-            
-            int strategy = 0;
+
+           
             std::cout << "\nВЫБОР СТРАТЕГИИ ДЛЯ ЗАКАЗА\n";
-            std::cout << "1. Быстрая доставка (минимальное время)\n";
-            std::cout << "2. Экономичная доставка (минимальная цена)\n";
+            std::cout << "1. Быстрая доставка (приоритет времени)\n";
+            std::cout << "2. Экономичная доставка (одиночная: минимальная цена, увеличенные сроки)\n";
+            std::cout << "3. Группировка товара (добавить в общую партию, чтобы не везти «воздух»)\n";
             std::cout << "Выбор: ";
+            
             int strat_input;
+            if (!(std::cin >> strat_input)) {
+                std::cin.clear();
+                std::cin.ignore(10000, '\n');
+                strat_input = 1; 
+            }
+
+           
+            if (strat_input == 3) {
+                groupOrders.push_back(newOrder);
+                std::cout << "\nРЕЗУЛЬТАТ: Заказ #" << order_counter << " отложен для группировки.\n";
+                std::cout << "Как только добавите соседей, используйте пункт 4 в главном меню для запуска рейса.\n";
+                order_counter++;
+                continue; 
+            }
+
+           
+            if (strat_input == 2) {
+                max_time *= 2.0f; 
+                
+                newOrder = Order(order_counter, w, v, dest, static_cast<int>(max_time * 60));
+                std::cout << "\n[Информация] Экономичная стратегия. Лимит времени ожидания увеличен до " << max_time << " часов.\n";
+            }
 
             std::cout << "\nРАСПРЕДЕЛЕНИЕ\n";
-            //выберите стратегию и два путя 
             
             Transport* best_transport = nullptr;
-            float best_time = 99999; 
+            float best_metric = 999999.0f; 
+            float best_final_time = 0.0f;
+            float best_final_price = 0.0f;
 
             for (Transport* t : fleet) {
                 if (!isLogicalChoice(t->getname(), w, v, x, y)) {
@@ -422,39 +438,50 @@ int main() {
                 }
 
                 if(!t->canHandle(newOrder)){
-                    std::cout << t->getname() << " не подходит (нерентабельно)\n";
+                    std::cout << t->getname() << " не подходит (ограничения веса/объема)\n";
                     continue;
                 }
+                
                 float current_time = t->calculateTime(newOrder);
                 if (current_time > max_time) {
                     std::cout << t->getname() << " не успеет (нужно: "
-                            << formatTime(current_time) << ")\n";
+                              << formatTime(current_time) << ", жесткий лимит: " << max_time << " ч)\n";
                     continue;
                 }
+                
                 float current_price = t->calculatePrice(newOrder);
 
                 std::cout << t->getname() << " справится за " << formatTime(current_time)
-              << " (Цена: " << std::fixed << std::setprecision(2)
-              << current_price << " руб.)\n";
+                          << " (Цена: " << std::fixed << std::setprecision(2)
+                          << current_price << " руб.)\n";
 
-   
-                if (current_time < best_time) {
-                    best_time = current_time;
-                    best_transport = t;
+                
+                if (strat_input == 1) { // Приоритет скорости
+                    if (current_time < best_metric) {
+                        best_metric = current_time;
+                        best_transport = t;
+                        best_final_time = current_time;
+                        best_final_price = current_price;
+                    }
+                } else if (strat_input == 2) { 
+                    if (current_price < best_metric) {
+                        best_metric = current_price;
+                        best_transport = t;
+                        best_final_time = current_time;
+                        best_final_price = current_price;
+                    }
                 }
-
             }
 
             if (best_transport != nullptr) {
-                std::cout << "\nРЕЗУЛЬТАТ: Назначено на " << best_transport->getname() 
-                          << " (Время: " << formatTime(best_time) << ")\n";
-                float price = best_transport->calculatePrice(newOrder);
-                std::cout << "Стоимость доставки: " << std::fixed << std::setprecision(2) << price << " руб.\n";
+                std::cout << "\nРЕЗУЛЬТАТ (" << (strat_input == 1 ? "Быстрая стратегия" : "Самая дешевая стратегия") << "):\n";
+                std::cout << "Назначено на " << best_transport->getname() 
+                          << " (Время: " << formatTime(best_final_time) << ")\n";
+                std::cout << "Стоимость доставки: " << std::fixed << std::setprecision(2) << best_final_price << " руб.\n";
             } else {
-                std::cout << "\nВНИМАНИЕ: Нет доступного транспорта для этого заказа\n";
+                std::cout << "\nВНИМАНИЕ: Нет доступного транспорта для этого заказа даже с учетом стратегии.\n";
             }
-            
-            order_counter++;
+            order_counter++; 
         }
         else {
             std::cout << "Неверный выбор меню\n";
