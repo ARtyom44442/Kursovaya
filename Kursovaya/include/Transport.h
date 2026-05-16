@@ -23,6 +23,8 @@ public:
     std::string getname() { return type_name; }
     float getspeed() { return speed; }
     coords getCurrentPos() { return current_pos; }
+    float getmax_w() const { return max_weight; }
+    float getmax_v() const { return max_vol; }
 
     void set_type_name(std::string name) { type_name = name; }
     void setSpeed(float s) { speed = s; }

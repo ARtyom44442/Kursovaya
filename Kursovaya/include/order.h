@@ -14,11 +14,11 @@ private:
 public:
     Order(int id, float w, float v, coords d, int mt);
 
-    int getID() { return ID; }
-    float getWeight() { return weight; }
-    float getVol() { return vol; }
-    int getMaxTime() { return max_time; }
-    coords getDestination() { return destination; }
+    int getID() const { return ID; }
+    float getWeight() const { return weight; }
+    float getVol() const { return vol; }
+    int getMaxTime() const { return max_time; }
+    coords getDestination() const { return destination; }
 
     void setDestination(coords d);
     void setWeight(float w);
