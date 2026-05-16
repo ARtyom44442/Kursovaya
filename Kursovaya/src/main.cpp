@@ -14,22 +14,16 @@
 
 const float PROXIMITY_THRESHOLD = 50.0f;
 
-// ---------- ДОБАВЛЕННАЯ ФУНКЦИЯ СТРАТЕГИИ БЫСТРОЙ ДОСТАВКИ ----------
-// Стратегия поиска максимально быстрого транспорта для доставки заказа
-// Приоритет скорости: игнорируем экономическую нецелесообразность, используем самый быстрый подходящий транспорт
 Transport* findFastestTransport(const std::vector<Transport*>& fleet, const Order& order) {
     Transport* best = nullptr;
     float bestTime = std::numeric_limits<float>::max();
 
     for (Transport* t : fleet) {
-        // Проверяем, может ли транспорт перевезти заказ по весу и объёму
-        if (!t->canHandle(const_cast<Order&>(order)))  // canHandle требует неконстантную ссылку
+        if (!t->canHandle(const_cast<Order&>(order)))  
             continue;
 
-        // Время доставки с учётом особенностей транспорта (трафик для грузовиков, батарея для дронов и т.д.)
         float timeNeeded = t->calculateTime(const_cast<Order&>(order));
 
-        // Учитываем максимально допустимое время заказа
         if (timeNeeded > order.getMaxTime())
             continue;
 
@@ -40,7 +34,6 @@ Transport* findFastestTransport(const std::vector<Transport*>& fleet, const Orde
     }
     return best;
 }
-// --------------------------------------------------------------------
 
 bool isValidInput(float w, float v, int x, int y, float t) {
     if (w <= 0 || w > 10000) return false;
@@ -228,7 +221,7 @@ int main() {
         std::cout << "2. Посмотреть доступный транспорт\n";
         std::cout << "3. Добавить заказ в группу\n";
         std::cout << "4. Выполнить группировку и доставку\n";
-        std::cout << "5. Быстрая доставка (приоритет скорости)\n";   // НОВЫЙ ПУНКТ
+        std::cout << "5. Быстрая доставка (приоритет скорости)\n";   
         std::cout << "0. Выход\n";
         std::cout << "Выбор: ";
 
@@ -302,7 +295,6 @@ int main() {
             performGroupDelivery(fleet, groupOrders);
             groupOrders.clear();
         }
-        // НОВЫЙ ОБРАБОТЧИК ДЛЯ ПУНКТА 5
         else if (choice == 5) {
             float w, v, max_time;
             int x, y;
@@ -360,7 +352,6 @@ int main() {
             }
             order_counter++;
         }
-        // КОНЕЦ НОВОГО ОБРАБОТЧИКА
         else if (choice == 1) {
             float w, v, max_time;
             int x, y;

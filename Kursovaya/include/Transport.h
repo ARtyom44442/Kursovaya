@@ -23,7 +23,6 @@ public:
     float getspeed() const { return speed; }
     coords getCurrentPos() const { return current_pos; }
 
-    // Добавленные геттеры:
     float getmax_w() const { return max_weight; }
     float getmax_v() const { return max_vol; }
 
