@@ -157,7 +157,6 @@ void performGroupDelivery(const std::vector<Transport*>& fleet, std::vector<Orde
         return;
     }
 
-    // Применение стратегии
     if (strategy == 2) {
         std::cout << "\n[Информация] Экономичная стратегия. Лимиты времени всех заказов в группе увеличены в 2 раза.\n";
         for (auto& ord : groupOrders) {
@@ -187,7 +186,7 @@ void performGroupDelivery(const std::vector<Transport*>& fleet, std::vector<Orde
             [](const RouteInfo& a, const RouteInfo& b) { return a.totalTime < b.totalTime; });
     }
 
-    std::cout << "\n=== ЛУЧШИЙ ТРАНСПОРТ (" << (strategy == 1 ? "Приоритет скорости" : "Приоритет цены") << ") ===\n";
+    std::cout << "\n ЛУЧШИЙ ТРАНСПОРТ (" << (strategy == 1 ? "Приоритет скорости" : "Приоритет цены") << ") \n";
     std::cout << "Назначен: " << bestRoute.transport->getname() << "\n";
     std::cout << "Последовательность доставки:\n";
     for (size_t i = 0; i < bestRoute.orderIndices.size(); ++i) {
@@ -281,7 +280,7 @@ int main() {
             groupOrders.clear();
         }
        else if (choice == 1) {
-            std::cout << "\n=== ОФОРМЛЕНИЕ ОДИНОЧНОГО ЗАКАЗА ===\n";
+            std::cout << "\n ОФОРМЛЕНИЕ ОДИНОЧНОГО ЗАКАЗА \n";
             float w = getFloatInput("Вес (кг): ");
             float v = getFloatInput("Объем (м3): ");
             float max_time = getFloatInput("Макс. время доставки (часы): ");
@@ -307,10 +306,10 @@ int main() {
             float best_final_price = 0.0f;
 
             for (Transport* t : fleet) {
-                if (!isLogicalChoice(t->getname(), w, v, x, y)) {
-                    std::cout << t->getname() << " не подходит (нерентабельно)\n";
-                    continue;
-                }
+                //if (!isLogicalChoice(t->getname(), w, v, x, y)) {
+                 //   std::cout << t->getname() << " не подходит (нерентабельно)\n";
+                  //  continue;
+               // }
 
                 if(!t->canHandle(newOrder)){
                     std::cout << t->getname() << " не подходит (ограничения веса/объема)\n";
