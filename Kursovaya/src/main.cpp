@@ -12,7 +12,6 @@
 #include "Transport.h"
 #include <algorithm>   
 #include <climits>     
-const float PROXIMITY_THRESHOLD = 50.0f;
 
 float getFloatInput(const std::string& prompt) {
     float val;
@@ -152,8 +151,8 @@ void performGroupDelivery(const std::vector<Transport*>& fleet, std::vector<Orde
         return;
     }
 
-    if (!areOrdersClose(groupOrders, PROXIMITY_THRESHOLD)) {
-        std::cout << "Заказы расположены слишком далеко друг от друга (более " << PROXIMITY_THRESHOLD << " км). Группировка невозможна.\n";
+    if (!areOrdersClose(groupOrders, 200)) {
+        std::cout << "Заказы расположены слишком далеко друг от друга (более " << 200 << " км). Группировка невозможна.\n";
         return;
     }
 
@@ -256,7 +255,6 @@ int main() {
         else if (choice == 3) {
 
             std::cout << "\nОФОРМЛЕНИЕ ЗАКАЗА ДЛЯ ГРУППЫ\n";
-            std::cout << "Вес (кг): ";
             float w = getFloatInput("Вес (кг): ");
             float v = getFloatInput("Объем (м3): ");
             float max_time = getFloatInput("Макс. время доставки (часы): ");
