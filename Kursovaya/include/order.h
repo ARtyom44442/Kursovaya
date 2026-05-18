@@ -1,4 +1,6 @@
 #pragma once
+#include <vector> 
+#include <string>
 
 struct coords {
     int x, y;
@@ -14,6 +16,8 @@ private:
 public:
     Order(int id, float w, float v, coords d, int mt);
 
+    static bool areOrdersClose(const std::vector<Order>& orders, float threshold = 200.0f);
+
     int getID() const { return ID; }
     float getWeight() const { return weight; }
     float getVol() const { return vol; }
@@ -27,3 +31,8 @@ public:
 
     void PrintStats();
 };
+namespace UI {
+    float getFloatInput(const std::string& prompt);
+    int getIntInput(const std::string& prompt);
+    int getStrategyChoice();
+}

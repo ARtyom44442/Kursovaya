@@ -92,17 +92,54 @@ void Order::PrintStats() {
     std::cout << "Максимальное время доставки: " << max_time << std::endl;
 }
 
-//int main() {
-  //  int id, mt;
-    //float w, v;
-//    coords d = {0, 0};
-//    srand(time(0));
-//    id = generateID();
-//    w = inputWeight();
-//    v = inputVol();
- //   mt = inputMaxTime();
-//    d = inputDestination();
-//    Order myOrder(id, w, v, d, mt);
-//
- //   myOrder.PrintStats();
-//}
+
+bool Order::areOrdersClose(const std::vector<Order>& orders, float threshold) {
+    if (orders.size() < 2) return true;
+    for (size_t i = 0; i < orders.size(); ++i) {
+        for (size_t j = i + 1; j < orders.size(); ++j) {
+            coords a = orders[i].getDestination();
+            coords b = orders[j].getDestination();
+            float dist = std::sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+            if (dist > threshold) return false;
+        }
+    }
+    return true;
+}
+
+namespace UI {
+    float getFloatInput(const std::string& prompt) {
+        float val;
+        while (true) {
+            std::cout << prompt;
+            if (std::cin >> val && val > 0 && val <= 10000) return val;
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            std::cout << "  [Ошибка] Введите число больше 0 и не более 10000.\n";
+        }
+    }
+
+    int getIntInput(const std::string& prompt) {
+        int val;
+        while (true) {
+            std::cout << prompt;
+            if (std::cin >> val && val >= 0 && val <= 10000) return val;
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            std::cout << "  [Ошибка] Введите целое число от 0 до 10000.\n";
+        }
+    }
+
+    int getStrategyChoice() {
+        int strat;
+        while (true) {
+            std::cout << "\nВЫБЕРИТЕ СТРАТЕГИЮ ДОСТАВКИ:\n"
+                      << "1. Быстрая доставка (приоритет времени)\n"
+                      << "2. Экономичная доставка (минимальная цена)\n"
+                      << "Выбор: ";
+            if (std::cin >> strat && (strat == 1 || strat == 2)) return strat;
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            std::cout << "  [Ошибка] Введите 1 или 2.\n";
+        }
+    }
+}
