@@ -12,6 +12,54 @@
     "charge_rate": 8.0
   },
   {
+    "type": "drone",
+    "name": "Drone_Amazon_PrimeAir",
+    "speed": 75.0,
+    "max_weight": 3.5,
+    "max_vol": 0.3,
+    "x": 0,
+    "y": 0,
+    "battery": 90.0,
+    "delivery_rate": 140.0,
+    "charge_rate": 10.0
+  },
+  {
+    "type": "drone",
+    "name": "Drone_FixWing_Cargo",
+    "speed": 90.0,
+    "max_weight": 10.0,
+    "max_vol": 1.2,
+    "x": 0,
+    "y": 0,
+    "battery": 180.0,
+    "delivery_rate": 180.0,
+    "charge_rate": 15.0
+  },
+  {
+    "type": "drone",
+    "name": "Drone_Skydio_X2",
+    "speed": 50.0,
+    "max_weight": 2.0,
+    "max_vol": 0.2,
+    "x": 0,
+    "y": 0,
+    "battery": 75.0,
+    "delivery_rate": 95.0,
+    "charge_rate": 5.5
+  },
+  {
+    "type": "drone",
+    "name": "Drone_Ehang_Heavy",
+    "speed": 80.0,
+    "max_weight": 25.0,
+    "max_vol": 2.5,
+    "x": 0,
+    "y": 0,
+    "battery": 240.0,
+    "delivery_rate": 250.0,
+    "charge_rate": 22.0
+  },
+  {
     "type": "courier",
     "name": "On_Foot",
     "speed": 6.0,
@@ -22,6 +70,18 @@
     "radius": 6.0,
     "hourly_rate": 9.0,
     "base_fee": 0.1
+  },
+  {
+    "type": "courier",
+    "name": "On_Foot_Express",
+    "speed": 7.0,
+    "max_weight": 7.0,
+    "max_vol": 1.5,
+    "x": 0,
+    "y": 0,
+    "radius": 5.0,
+    "hourly_rate": 12.0,
+    "base_fee": 0.5
   },
   {
     "type": "courier",
@@ -36,8 +96,44 @@
     "base_fee": 1.5
   },
   {
+    "type": "courier",
+    "name": "Electric_Scooter",
+    "speed": 25.0,
+    "max_weight": 12.0,
+    "max_vol": 1.8,
+    "x": 0,
+    "y": 0,
+    "radius": 15.0,
+    "hourly_rate": 18.5,
+    "base_fee": 2.0
+  },
+  {
+    "type": "courier",
+    "name": "Electric_Bike",
+    "speed": 28.0,
+    "max_weight": 20.0,
+    "max_vol": 2.5,
+    "x": 0,
+    "y": 0,
+    "radius": 18.0,
+    "hourly_rate": 22.0,
+    "base_fee": 2.5
+  },
+  {
+    "type": "courier",
+    "name": "Courier_El_Bike2",
+    "speed": 35.0,
+    "max_weight": 10.0,
+    "max_vol": 1.0,
+    "x": 0,
+    "y": 0,
+    "radius": 25.0,
+    "hourly_rate": 30.0,
+    "base_fee": 5.0
+  },
+  {
     "type": "truck",
-    "name": "Truck_Ford_F650 ",
+    "name": "Truck_Ford_F650",
     "speed": 40.0,
     "max_weight": 5000.0,
     "max_vol": 30.0,
@@ -45,5 +141,49 @@
     "y": 0,
     "delivery_rate": 70.0,
     "fuel_rate": 5.8
+  },
+  {
+    "type": "truck",
+    "name": "Truck_Mercedes_Sprinter",
+    "speed": 55.0,
+    "max_weight": 1500.0,
+    "max_vol": 14.0,
+    "x": 0,
+    "y": 0,
+    "delivery_rate": 50.0,
+    "fuel_rate": 4.2
+  },
+  {
+    "type": "truck",
+    "name": "Truck_MAN_TGX",
+    "speed": 35.0,
+    "max_weight": 12000.0,
+    "max_vol": 60.0,
+    "x": 0,
+    "y": 0,
+    "delivery_rate": 110.0,
+    "fuel_rate": 8.5
+  },
+  {
+    "type": "truck",
+    "name": "Truck_Hyundai_Porter",
+    "speed": 50.0,
+    "max_weight": 950.0,
+    "max_vol": 8.0,
+    "x": 0,
+    "y": 0,
+    "delivery_rate": 40.0,
+    "fuel_rate": 3.5
+  },
+  {
+    "type": "truck",
+    "name": "Truck_Tesla_Semi",
+    "speed": 65.0,
+    "max_weight": 15000.0,
+    "max_vol": 80.0,
+    "x": 0,
+    "y": 0,
+    "delivery_rate": 150.0,
+    "fuel_rate": 9.5
   }
 ]
