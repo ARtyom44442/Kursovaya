@@ -2,6 +2,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
+#include <cmath>
 
 Order::Order(int id, float w, float v, coords d, int mt): ID(id), weight(w), vol(v), destination(d), max_time(mt) {
 
