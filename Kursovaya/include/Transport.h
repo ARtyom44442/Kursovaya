@@ -2,7 +2,15 @@
 #include <string>
 #include "order.h"
 #include <cmath>
+#include <vector>
 
+struct RouteInfo {
+    class Transport* transport;
+    std::vector<int> orderIndices;
+    std::vector<float> arrivalTimes;
+    float totalTime;
+    float totalPrice;
+};
 class Transport {
 private:
     std::string type_name;
@@ -32,4 +40,6 @@ public:
     void setmax_v(float v) { max_vol = v; }
 
     void PrintStats();
+    bool buildRoute(const std::vector<Order>& orders, RouteInfo& route);
+    static std::string formatTime(float hours);
 };
