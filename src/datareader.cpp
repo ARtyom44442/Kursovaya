@@ -27,14 +27,20 @@ std::vector<Transport*> DataReader::loadTransports(const std::string& filename) 
 
         if (type == "drone") {
             float battery = item["battery"];
-            fleet.push_back(new Drone(name, speed, max_w, max_v, pos, battery));
+            float delivery_rate = item.value("delivery_rate", 150.0f);  
+            float charge_rate   = item.value("charge_rate", 25.0f);
+            fleet.push_back(new Drone(name, speed, max_w, max_v, pos, battery, delivery_rate, charge_rate));
         } 
         else if (type == "courier") {
             float radius = item["radius"];
-            fleet.push_back(new Courier(name, speed, max_w, max_v, pos, radius));
+            float hourly_rate = item.value("hourly_rate", 300.0f);
+            float base_fee    = item.value("base_fee", 100.0f);
+            fleet.push_back(new Courier(name, speed, max_w, max_v, pos, radius, hourly_rate, base_fee));
         }
         else if (type == "truck") {
-            fleet.push_back(new Truck(name, speed, max_w, max_v, pos));
+            float delivery_rate = item.value("delivery_rate", 150.0f);
+            float fuel_rate = item.value("fuel_rate", 25.0f);
+            fleet.push_back(new Truck(name, speed, max_w, max_v, pos, delivery_rate, fuel_rate));
         }
     }
 

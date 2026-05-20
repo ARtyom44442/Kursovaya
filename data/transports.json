@@ -5,9 +5,23 @@
     "speed": 60.0,
     "max_weight": 5.0,
     "max_vol": 0.5,
-    "x": 10,
-    "y": 10,
-    "battery": 120.0
+    "x": 0,
+    "y": 0,
+    "battery": 120.0,
+    "delivery_rate": 120.0,
+    "charge_rate": 8.0
+  },
+  {
+    "type": "courier",
+    "name": "On_Foot",
+    "speed": 6.0,
+    "max_weight": 10.0,
+    "max_vol": 2.0,
+    "x": 0,
+    "y": 0,
+    "radius": 6.0,
+    "hourly_rate": 9.0,
+    "base_fee": 0.1
   },
   {
     "type": "courier",
@@ -15,9 +29,11 @@
     "speed": 20.0,
     "max_weight": 15.0,
     "max_vol": 2.0,
-    "x": 50,
-    "y": 50,
-    "radius": 1500.0
+    "x": 0,
+    "y": 0,
+    "radius": 12.0,
+    "hourly_rate": 16.0,
+    "base_fee": 1.5
   },
   {
     "type": "truck",
@@ -26,6 +42,8 @@
     "max_weight": 5000.0,
     "max_vol": 30.0,
     "x": 0,
-    "y": 0
+    "y": 0,
+    "delivery_rate": 70.0,
+    "fuel_rate": 5.8
   }
 ]
