@@ -11,6 +11,7 @@ struct RouteInfo {
     float totalTime;
     float totalPrice;
 };
+
 class Transport {
 private:
     std::string type_name;
@@ -18,6 +19,7 @@ private:
     float max_weight;
     float max_vol;
     coords current_pos;
+    bool busy;
 
 public:
     Transport(std::string name, float s, float max_w, float max_v, coords pos);
@@ -33,6 +35,10 @@ public:
     coords getCurrentPos() { return current_pos; }
     float getmax_w() const { return max_weight; }
     float getmax_v() const { return max_vol; }
+    
+    bool isBusy() const { return busy; }
+    void setBusy(bool b) { busy = b; }
+    void setPosition(coords pos) { current_pos = pos; }
 
     void set_type_name(std::string name) { type_name = name; }
     void setSpeed(float s) { speed = s; }

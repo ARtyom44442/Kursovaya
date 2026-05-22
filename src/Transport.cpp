@@ -5,7 +5,8 @@
 #include <limits>
 #include <iomanip>
 
-Transport::Transport(std::string name, float s, float max_w, float max_v, coords pos): type_name(name), speed(s), max_weight(max_w), max_vol(max_v), current_pos(pos) {}
+Transport::Transport(std::string name, float s, float max_w, float max_v, coords pos)
+    : type_name(name), speed(s), max_weight(max_w), max_vol(max_v), current_pos(pos), busy(false) {}
 
 bool Transport::canHandle(Order& order) {
     return order.getWeight() <= max_weight && order.getVol() <= max_vol;
@@ -17,7 +18,6 @@ float Transport::calculateTime(Order& order) {
     return dist / speed; 
 }
 
-
 std::string Transport::formatTime(float hours) {
     std::stringstream ss;
     int h = static_cast<int>(hours);
@@ -28,14 +28,14 @@ std::string Transport::formatTime(float hours) {
     return ss.str();
 }
 
-// Теперь это метод класса Transport::
 bool Transport::buildRoute(const std::vector<Order>& orders, RouteInfo& route) {
     float totalWeight = 0, totalVol = 0;
     for (const auto& ord : orders) {
         totalWeight += ord.getWeight();
         totalVol += ord.getVol();
     }
-    if (totalWeight > getmax_w() || totalVol > getmax_v()) return false;
+    
+    if (totalWeight > max_weight || totalVol > max_vol) return false;
 
     coords currentPos = getCurrentPos();
     std::vector<bool> delivered(orders.size(), false);
@@ -66,17 +66,19 @@ bool Transport::buildRoute(const std::vector<Order>& orders, RouteInfo& route) {
         elapsed = expectedArrivalTime;
         orderIdx.push_back(bestIdx);
         times.push_back(elapsed);
-
        
         total_price += calculatePrice(const_cast<Order&>(orders[bestIdx]));
         currentPos = orders[bestIdx].getDestination();
         delivered[bestIdx] = true;
     }
 
-    route.transport = this; 
-    route.orderIndices = orderIdx;
-    route.arrivalTimes = times;
-    route.totalTime = elapsed;
-    route.totalPrice = total_price;
-    return true;
+    if (orderIdx.size() == orders.size()) {
+        route.transport = this;
+        route.orderIndices = orderIdx;
+        route.arrivalTimes = times;
+        route.totalTime = elapsed;
+        route.totalPrice = total_price;
+        return true;
+    }
+    return false;
 }

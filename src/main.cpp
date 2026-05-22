@@ -6,12 +6,14 @@
 #include <sstream>
 #include <iomanip>
 #include <cmath>
+#include <cstdlib>
+#include <ctime>
 #include "order.h"
 #include "datareader.h"
 #include "Transport.h"
-#include "logger.h"
 #include <algorithm>   
 #include <climits>     
+#include "logger.h"
 
 void performGroupDelivery(const std::vector<Transport*>& fleet, std::vector<Order>& groupOrders, int strategy) {
     if (groupOrders.empty()) {
@@ -34,6 +36,8 @@ void performGroupDelivery(const std::vector<Transport*>& fleet, std::vector<Orde
 
     std::vector<RouteInfo> validRoutes;
     for (Transport* t : fleet) {
+        if (t->isBusy()) continue;
+
         RouteInfo route;
         if (t->buildRoute(groupOrders, route)) {
             validRoutes.push_back(route);
@@ -41,21 +45,17 @@ void performGroupDelivery(const std::vector<Transport*>& fleet, std::vector<Orde
     }
 
     if (validRoutes.empty()) {
-        std::cout << "\nВНИМАНИЕ: Нет доступного транспорта для этой группы заказов.\n";
-        logger::log("Групповая доставка: подходящий транспорт не найден");
+        std::cout << "\nВНИМАНИЕ: Нет доступного (свободного) транспорта для этой группы заказов.\n";
+        logger::log("Групповая доставка: подходящий транспорт не найден или весь занят");
         return;
     }
 
     RouteInfo best_route = validRoutes[0];
     for (const auto& r : validRoutes) {
         if (strategy == 1) {
-            if (r.totalTime < best_route.totalTime) {
-                best_route = r;
-            }
+            if (r.totalTime < best_route.totalTime) best_route = r;
         } else if (strategy == 2) {
-            if (r.totalPrice < best_route.totalPrice) {
-                best_route = r;
-            }
+            if (r.totalPrice < best_route.totalPrice) best_route = r;
         }
     }
 
@@ -64,6 +64,11 @@ void performGroupDelivery(const std::vector<Transport*>& fleet, std::vector<Orde
     std::cout << "Общее время: " << Transport::formatTime(best_route.totalTime) << "\n";
     std::cout << "Общая стоимость: " << std::fixed << std::setprecision(2) << best_route.totalPrice << " руб.\n";
     
+    best_route.transport->setBusy(true);
+    if (!best_route.orderIndices.empty()) {
+        best_route.transport->setPosition(groupOrders[best_route.orderIndices.back()].getDestination());
+    }
+
     logger::log("Групповая доставка успешно назначена на транспорт: " + best_route.transport->getname());
 }
 
@@ -79,7 +84,15 @@ int main() {
         logger::log("Критическая ошибка: Автопарк пуст, завершение работы");
         return 1;
     }
-    logger::log("Автопарк успешно загружен. Доступно единиц транспорта: " + std::to_string(fleet.size()));
+
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    for (Transport* t : fleet) {
+        int rx = (std::rand() % 201) - 100;
+        int ry = (std::rand() % 201) - 100;
+        t->setPosition({rx, ry});
+    }
+
+    logger::log("Автопарк загружен. Транспорту заданы случайные координаты. Единиц: " + std::to_string(fleet.size()));
 
     std::vector<Order> groupOrders;
     int choice = -1;
@@ -91,6 +104,7 @@ int main() {
         std::cout << "2. Посмотреть доступный транспорт\n";
         std::cout << "3. Добавить заказ в группу\n";
         std::cout << "4. Выполнить групповую доставку\n";
+        std::cout << "5. Завершить текущие рейсы (Освободить транспорт)\n";
         std::cout << "0. Выход\n";
         std::cout << "Выбор: ";
 
@@ -109,10 +123,13 @@ int main() {
             break;
         }
         else if (choice == 2) {
-            logger::log("Запрошен просмотр доступного автопарка");
-            std::cout << "\nДОСТУПНЫЙ АВТОПАРК\n";
+            logger::log("Запрошен просмотр автопарка");
+            std::cout << "\nСОСТОЯНИЕ АВТОПАРКА\n";
             for (Transport* t : fleet) {
-                std::cout << t->getname() << " (Скорость: " << t->getspeed() << ")\n";
+                std::string status = t->isBusy() ? "[В РЕЙСЕ]" : "[СВОБОДЕН]";
+                coords pos = t->getCurrentPos();
+                std::cout << status << " " << t->getname() 
+                          << " | Координаты: (" << pos.x << ", " << pos.y << ")\n";
             }
         }
         else if (choice == 1) {
@@ -124,10 +141,9 @@ int main() {
 
             coords dest = {x, y};
             Order newOrder(order_counter, w, v, dest, max_time);
-            logger::log("Создан одиночный заказ ID: " + std::to_string(order_counter) + " (Вес: " + std::to_string(w) + ", Объем: " + std::to_string(v) + ")");
+            logger::log("Создан одиночный заказ ID: " + std::to_string(order_counter));
 
             int strat_input = UI::getStrategyChoice();
-            logger::log("Для заказа ID " + std::to_string(order_counter) + " выбрана стратегия поиска: " + std::to_string(strat_input));
 
             Transport* best_transport = nullptr;
             float best_metric = std::numeric_limits<float>::max();
@@ -135,6 +151,8 @@ int main() {
             float best_final_price = 0;
 
             for (Transport* t : fleet) {
+                if (t->isBusy()) continue;
+
                 if (t->canHandle(newOrder)) {
                     float current_time = t->calculateTime(newOrder);
                     float current_price = t->calculatePrice(newOrder);
@@ -162,10 +180,14 @@ int main() {
                 std::cout << "Назначено на " << best_transport->getname() 
                           << " (Время: " << Transport::formatTime(best_final_time) << ")\n";
                 std::cout << "Стоимость доставки: " << std::fixed << std::setprecision(2) << best_final_price << " руб.\n";
-                logger::log("Заказ ID " + std::to_string(order_counter) + " успешно распределен на " + best_transport->getname() + " за " + std::to_string(best_final_price) + " руб.");
+                
+                best_transport->setBusy(true);
+                best_transport->setPosition(newOrder.getDestination());
+                
+                logger::log("Заказ ID " + std::to_string(order_counter) + " распределен на " + best_transport->getname());
             } else {
-                std::cout << "\nВНИМАНИЕ: Нет доступного транспорта для этого заказа даже с учетом стратегии.\n";
-                logger::log("Предупреждение: Не удалось найти подходящий транспорт для одиночного заказа ID " + std::to_string(order_counter));
+                std::cout << "\nВНИМАНИЕ: Нет доступного (или свободного) транспорта для этого заказа.\n";
+                logger::log("Предупреждение: Не удалось найти свободный транспорт для заказа ID " + std::to_string(order_counter));
             }
             order_counter++; 
         }
@@ -179,14 +201,24 @@ int main() {
             coords dest = {x, y};
             groupOrders.push_back(Order(order_counter, w, v, dest, max_time));
             std::cout << "Заказ добавлен в текущую группу. Всего заказов в группе: " << groupOrders.size() << "\n";
-            logger::log("Заказ ID " + std::to_string(order_counter) + " добавлен в пул для групповой доставки");
+            logger::log("Заказ ID " + std::to_string(order_counter) + " добавлен в пул");
             order_counter++;
         }
         else if (choice == 4) {
             int strat_input = UI::getStrategyChoice();
-            logger::log("Запрошено выполнение групповой доставки. Всего заказов: " + std::to_string(groupOrders.size()) + ", стратегия: " + std::to_string(strat_input));
             performGroupDelivery(fleet, groupOrders, strat_input);
             groupOrders.clear();
+        }
+        else if (choice == 5) {
+            int freed_count = 0;
+            for (Transport* t : fleet) {
+                if (t->isBusy()) {
+                    t->setBusy(false);
+                    freed_count++;
+                }
+            }
+            std::cout << "\nОсвобождено машин: " << freed_count << "\n";
+            logger::log("Диспетчер вручную завершил все рейсы. Освобождено единиц: " + std::to_string(freed_count));
         }
         else {
             std::cout << "Неверный выбор меню\n";
