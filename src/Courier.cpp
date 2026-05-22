@@ -15,7 +15,8 @@ bool Courier::canHandle(Order& order) {
 }
 float Courier::calculatePrice(Order& order) {
     float timeHours = calculateTime(order); 
-    return base_fee + hourly_rate * timeHours;
+    float basePrice = base_fee + hourly_rate * timeHours;
+    return basePrice * getDemandFactor();
 }
 
 void Courier::PrintStats() {}

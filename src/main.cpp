@@ -71,6 +71,36 @@ void performGroupDelivery(const std::vector<Transport*>& fleet, std::vector<Orde
 
     logger::log("Групповая доставка успешно назначена на транспорт: " + best_route.transport->getname());
 }
+void updateMarketDemand(const std::vector<Transport*>& fleet) {
+    if (fleet.empty()) return;
+
+    int busyCount = 0;
+    for (const Transport* t : fleet) {
+        if (t->isBusy()) {
+            busyCount++;
+        }
+    }
+
+    float busyPercentage = static_cast<float>(busyCount) / fleet.size();
+
+    if (busyPercentage > 0.70f) {
+        Transport::setDemandFactor(1.30f);
+        std::cout << "\n[ДИНАМИЧЕСКИЙ ТАРИФ] Высокий спрос! Занято " 
+                  << std::fixed << std::setprecision(0) << (busyPercentage * 100) 
+                  << "% транспорта. Цены временно повышены на 40%.\n";
+        logger::log("Surge Pricing активирован: коэффициент спроса x1.40 (Занято " + std::to_string(busyCount) + " машин)");
+    } 
+    else if (busyPercentage < 0.15f) {
+        Transport::setDemandFactor(0.85f); 
+        std::cout << "\n[ДИНАМИЧЕСКИЙ ТАРИФ] Низкий спрос. Занято всего " 
+                  << std::fixed << std::setprecision(0) << (busyPercentage * 100) 
+                  << "% транспорта. Действует скидка 15%!\n";
+        logger::log("Скидка при низком спросе: коэффициент спроса x0.85");
+    } 
+    else {
+        Transport::setDemandFactor(1.0f);  
+    }
+}
 
 int main() {
     std::setlocale(LC_ALL, "ru_RU.UTF-8");
@@ -133,6 +163,7 @@ int main() {
             }
         }
         else if (choice == 1) {
+            updateMarketDemand(fleet);
             float w = UI::getFloatInput("Вес (кг): ");
             float v = UI::getFloatInput("Объем (м3): ");
             int max_time = UI::getIntInput("Макс. время доставки (минуты): ");
@@ -205,6 +236,7 @@ int main() {
             order_counter++;
         }
         else if (choice == 4) {
+            updateMarketDemand(fleet);
             int strat_input = UI::getStrategyChoice();
             performGroupDelivery(fleet, groupOrders, strat_input);
             groupOrders.clear();

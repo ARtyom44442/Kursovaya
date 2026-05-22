@@ -32,5 +32,6 @@ float Truck::calculateTime(Order& order) {
 
 float Truck::calculatePrice(Order& order){
     float timeHours = calculateTime(order);
-    return (delivery_rate * timeHours + fuel_rate * timeHours * 2) * 1.008;
+    float basePrice = (delivery_rate * timeHours + fuel_rate * timeHours * 2) * 1.008f;
+    return basePrice * getDemandFactor();
 }

@@ -20,6 +20,7 @@ private:
     float max_vol;
     coords current_pos;
     bool busy;
+    static float demand_factor;
 
 public:
     Transport(std::string name, float s, float max_w, float max_v, coords pos);
@@ -44,6 +45,9 @@ public:
     void setSpeed(float s) { speed = s; }
     void setmax_w(float w) { max_weight = w; }
     void setmax_v(float v) { max_vol = v; }
+    
+    static void setDemandFactor(float factor);
+    static float getDemandFactor();
 
     void PrintStats();
     bool buildRoute(const std::vector<Order>& orders, RouteInfo& route);
