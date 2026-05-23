@@ -4,8 +4,13 @@
 #include <cstdlib>
 #include <cmath>
 
-Order::Order(int id, float w, float v, coords d, int mt): ID(id), weight(w), vol(v), destination(d), max_time(mt) {
+Order::Order(int id, float w, float v, coords d, int mt, int type): ID(id), weight(w), vol(v), destination(d), max_time(mt), customer_type(type) {
 
+}
+void Order::setCustomerType(int type) {
+    if (type >= 1 && type <= 3) {
+        customer_type = type;
+    }
 }
 
 void Order::setWeight(float w) {
@@ -86,9 +91,14 @@ coords inputDestination() {
 }
 
 void Order::PrintStats() {
-    std::cout << "ID Закза: " << ID << std::endl;
+   std::cout << "ID Заказа: " << ID << std::endl;
+    std::cout << "Приоритет: ";
+    if (customer_type == 1) std::cout << "VIP" << std::endl;
+    else if (customer_type == 2) std::cout << "Экспресс" << std::endl;
+    else std::cout << "Эконом" << std::endl;
+    
     std::cout << "Вес: " << weight << std::endl;
-    std::cout << "Обьем: " << vol << std::endl;
+    std::cout << "Объем: " << vol << std::endl;
     std::cout << "Координаты цели доставки: " << destination.x << ", " << destination.y << std::endl;
     std::cout << "Максимальное время доставки: " << max_time << std::endl;
 }
@@ -141,6 +151,22 @@ namespace UI {
             std::cin.clear();
             std::cin.ignore(10000, '\n');
             std::cout << "  [Ошибка] Введите 1 или 2.\n";
+        }
+    }
+    int getCustomerTypeChoice() {
+        int choice;
+        while (true) {
+            std::cout << "\nКатегория заказчика:\n"
+                      << "1. VIP персона (Максимальный приоритет)\n"
+                      << "2. Экспресс доставка\n"
+                      << "3. Эконом класс\n"
+                      << "Выбор: ";
+            if (std::cin >> choice && (choice >= 1 && choice <= 3)) {
+                return choice;
+            }
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            std::cout << "  [Ошибка] Выберите пункт от 1 до 3.\n";
         }
     }
 }

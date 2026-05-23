@@ -169,10 +169,11 @@ int main() {
             int max_time = UI::getIntInput("Макс. время доставки (минуты): ");
             int x = UI::getIntInput("Координата X: ");
             int y = UI::getIntInput("Координата Y: ");
+            int cust_type = UI::getCustomerTypeChoice();
 
             coords dest = {x, y};
-            Order newOrder(order_counter, w, v, dest, max_time);
-            logger::log("Создан одиночный заказ ID: " + std::to_string(order_counter));
+            Order newOrder(order_counter, w, v, dest, max_time, cust_type); 
+            logger::log("Создан одиночный заказ ID: " + std::to_string(order_counter) + ", Приоритет: " + std::to_string(cust_type));
 
             int strat_input = UI::getStrategyChoice();
 
@@ -228,11 +229,12 @@ int main() {
             int max_time = UI::getIntInput("Макс. время доставки (минуты): ");
             int x = UI::getIntInput("Координата X: ");
             int y = UI::getIntInput("Координата Y: ");
+            int cust_type = UI::getCustomerTypeChoice();
 
             coords dest = {x, y};
-            groupOrders.push_back(Order(order_counter, w, v, dest, max_time));
+            groupOrders.push_back(Order(order_counter, w, v, dest, max_time, cust_type));
             std::cout << "Заказ добавлен в текущую группу. Всего заказов в группе: " << groupOrders.size() << "\n";
-            logger::log("Заказ ID " + std::to_string(order_counter) + " добавлен в пул");
+            logger::log("Заказ ID " + std::to_string(order_counter) + " добавлен в пул с приоритетом " + std::to_string(cust_type));
             order_counter++;
         }
         else if (choice == 4) {

@@ -59,16 +59,25 @@ bool Transport::buildRoute(const std::vector<Order>& orders, RouteInfo& route) {
     for (size_t k = 0; k < orders.size(); ++k) {
         int bestIdx = -1;
         float bestDist = std::numeric_limits<float>::max();
+        int bestPriority = 3; 
         for (size_t i = 0; i < orders.size(); ++i) {
             if (delivered[i]) continue;
+            
+            int currentPriority = orders[i].getCustomerType(); 
             coords dest = orders[i].getDestination();
             float dist = std::sqrt((dest.x - currentPos.x) * (dest.x - currentPos.x) +
                                    (dest.y - currentPos.y) * (dest.y - currentPos.y));
-            if (dist < bestDist) {
+
+            if (bestIdx == -1 || 
+                currentPriority < bestPriority || 
+                (currentPriority == bestPriority && dist < bestDist)) {
+                
                 bestDist = dist;
                 bestIdx = static_cast<int>(i);
+                bestPriority = currentPriority;
             }
         }
+        
         if (bestIdx == -1) break;
 
         float travelTime = bestDist / getspeed();
