@@ -121,7 +121,7 @@ namespace UI {
         float val;
         while (true) {
             std::cout << prompt;
-            if (std::cin >> val && val > 0 && val <= 10000) return val;
+            if (std::cin >> val && val > 0 && val <= 10000) std::cin.ignore(10000, '\n');return val;
             std::cin.clear();
             std::cin.ignore(10000, '\n');
             std::cout << "  [Ошибка] Введите число больше 0 и не более 10000.\n";
@@ -132,7 +132,7 @@ namespace UI {
         int val;
         while (true) {
             std::cout << prompt;
-            if (std::cin >> val && val >= 0 && val <= 10000) return val;
+            if (std::cin >> val && val >= 0 && val <= 10000) std::cin.ignore(10000, '\n'); return val;
             std::cin.clear();
             std::cin.ignore(10000, '\n');
             std::cout << "  [Ошибка] Введите целое число от 0 до 10000.\n";
@@ -143,7 +143,7 @@ namespace UI {
         int val;
         while (true) {
             std::cout << prompt;
-            if (std::cin >> val && val >= -10000 && val <= 10000) return val;
+            if (std::cin >> val && val >= -10000 && val <= 10000) std::cin.ignore(10000, '\n'); return val;
             std::cin.clear();
             std::cin.ignore(10000, '\n');
             std::cout << "  [Ошибка] Введите координату от -10000 до 10000.\n";
@@ -157,7 +157,7 @@ namespace UI {
                       << "1. Быстрая доставка (приоритет времени)\n"
                       << "2. Экономичная доставка (минимальная цена)\n"
                       << "Выбор: ";
-            if (std::cin >> strat && (strat == 1 || strat == 2)) return strat;
+            if (std::cin >> strat && (strat == 1 || strat == 2))std::cin.ignore(10000, '\n'); return strat;
             std::cin.clear();
             std::cin.ignore(10000, '\n');
             std::cout << "  [Ошибка] Введите 1 или 2.\n";
@@ -172,11 +172,25 @@ namespace UI {
                       << "3. Эконом класс\n"
                       << "Выбор: ";
             if (std::cin >> choice && (choice >= 1 && choice <= 3)) {
+                std::cin.ignore(10000, '\n');
                 return choice;
             }
             std::cin.clear();
             std::cin.ignore(10000, '\n');
             std::cout << "  [Ошибка] Выберите пункт от 1 до 3.\n";
+        }
+    }
+    int getOrderIdForDeletion() {
+        int id;
+        while (true) {
+            std::cout << "Введите ID заказа для удаления (или 0 для отмены): ";
+            if (std::cin >> id && id >= 0) {
+                std::cin.ignore(10000, '\n');
+                return id;
+            }
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            std::cout << "  [Ошибка] Введите корректный ID.\n";
         }
     }
 }

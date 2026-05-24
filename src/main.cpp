@@ -136,11 +136,8 @@ int main() {
     }
 
     std::srand(static_cast<unsigned>(std::time(nullptr)));
-    for (Transport* t : fleet) {
-        int rx = (std::rand() % 11) - 5;
-        int ry = (std::rand() % 11) - 5;
-        t->setPosition({rx, ry});
-    }
+    for (Transport* t : fleet) t->setPosition({0, 0});
+    
 
     std::vector<Order> groupOrders;
     int choice = -1;
@@ -156,6 +153,7 @@ int main() {
         std::cout << "4. Выполнить групповую доставку\n";
         std::cout << "5. Перемотать время симуляции (ожидание)\n";
         std::cout << "6. Авто-симуляция (генератор заказов)\n";
+        std::cout << "7. Управление текущей группой заказов (Просмотр/Удаление)\n";
         std::cout << "0. Выход\n";
         std::cout << "Выбор: ";
 
@@ -217,7 +215,12 @@ int main() {
                 }
 
                 if (best_transport != nullptr) {
+                    float profit = best_transport->calculatePrice(autoOrder); 
+                    coords dest = autoOrder.getDestination();
                     std::cout << "Назначено на: " << best_transport->getname() << "\n";
+                    std::cout << "  Куда едет (Координаты): [" << dest.x << ", " << dest.y << "]\n";
+                    std::cout << "  Время в пути: " << Transport::formatTime(best_final_time) << "\n";
+                    std::cout << "  Заработок за заказ: " << std::fixed << std::setprecision(2) << profit << " руб.\n";
                     best_transport->setBusy(true);
                     
                     int travel_mins = static_cast<int>(best_final_time * 60);
@@ -227,6 +230,33 @@ int main() {
                     std::cout << "[Внимание] Нет свободного транспорта для авто-заказа!\n";
                 }
                 order_counter++;
+            }
+        }
+        else if (choice == 7) {
+            if (groupOrders.empty()) {
+                std::cout << "\nТекущая группа заказов пуста.\n";
+            } else {
+                std::cout << "\n Заказы в текущей группе \n";
+                for (size_t i = 0; i < groupOrders.size(); ++i) {
+                    std::cout << "[" << i + 1 << "] ";
+                    groupOrders[i].PrintStats();
+                }
+
+                int id_to_remove = UI::getOrderIdForDeletion();
+                if (id_to_remove != 0) {
+                    auto it = std::find_if(groupOrders.begin(), groupOrders.end(), 
+                        [id_to_remove](const Order& ord) {
+                            return ord.getID() == id_to_remove;
+                        });
+
+                    if (it != groupOrders.end()) {
+                        groupOrders.erase(it); 
+                        std::cout << "Заказ ID " << id_to_remove << " успешно удален из группы.\n";
+                        std::cout << "Всего заказов в группе теперь: " << groupOrders.size() << "\n";
+                    } else {
+                        std::cout << "Заказ с ID " << id_to_remove << " не найден в группе.\n";
+                    }
+                }
             }
         }
         else if (choice == 1) {
@@ -274,7 +304,10 @@ int main() {
             }
 
             if (best_transport != nullptr) {
-                std::cout << "\nНазначено на " << best_transport->getname() << "\n";
+                std::cout << "\nРЕЗУЛЬТАТ (" << (strat_input == 1 ? "Быстрая стратегия" : "Самая дешевая стратегия") << "):\n";
+                std::cout << "Назначено на " << best_transport->getname() 
+                          << " (Время: " << Transport::formatTime(best_final_time) << ")\n";
+                std::cout << "Стоимость доставки: " << std::fixed << std::setprecision(2) << best_final_price << " руб.\n";
                 
                 best_transport->setBusy(true);
                 int travel_mins = static_cast<int>(best_final_time * 60);

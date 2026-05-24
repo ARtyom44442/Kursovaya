@@ -41,4 +41,5 @@ namespace UI {
     int getCoordInput(const std::string& prompt); 
     int getStrategyChoice();
     int getCustomerTypeChoice();
+    int getOrderIdForDeletion();
 }
