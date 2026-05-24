@@ -139,6 +139,9 @@ int main() {
     for (Transport* t : fleet) t->setPosition({0, 0});
     
 
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    for (Transport* t : fleet) t->setPosition({0, 0});
+    
     std::vector<Order> groupOrders;
     int choice = -1;
     int order_counter = 1;
@@ -351,4 +354,4 @@ int main() {
     fleet.clear();
 
     return 0;
-}
+}`
