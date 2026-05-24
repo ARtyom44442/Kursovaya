@@ -230,15 +230,25 @@ int main() {
                 Transport* best_transport = nullptr;
                 float best_metric = std::numeric_limits<float>::max();
                 float best_final_time = 0;
+                
+                bool has_free = false;
+                bool has_capable = false;
+                bool has_time = false;
 
                 for (Transport* t : fleet) {
-                    if (t->isBusy()) continue;
-                    if (t->canHandle(autoOrder)) {
-                        float current_time = t->calculateTime(autoOrder);
-                        if (current_time < best_metric) {
-                            best_metric = current_time;
-                            best_transport = t;
-                            best_final_time = current_time;
+                    if (!t->isBusy()) {
+                        has_free = true;
+                        if (t->canHandle(autoOrder)) {
+                            has_capable = true;
+                            float current_time = t->calculateTime(autoOrder);
+                            if (current_time <= (max_t / 60.0f)) {
+                                has_time = true;
+                                if (current_time < best_metric) {
+                                    best_metric = current_time;
+                                    best_transport = t;
+                                    best_final_time = current_time;
+                                }
+                            }
                         }
                     }
                 }
@@ -259,8 +269,18 @@ int main() {
                     best_transport->setTimeToFree(virtual_time + travel_mins);
                     best_transport->setPosition(autoOrder.getDestination());
                 } else {
-                    std::cout << "[Внимание] Нет свободного транспорта для авто-заказа!\n";
-                    logger::log("[Авто-заказ] ОТКЛОНЕН ID " + std::to_string(order_counter) + ". Причина: нет свободного или подходящего по характеристикам транспорта.");
+                    if (!has_free) {
+                        std::cout << "[Внимание] Нет свободного транспорта для авто-заказа!\n";
+                        logger::log("[Авто-заказ] ОТКЛОНЕН ID " + std::to_string(order_counter) + ". Причина: нет свободного транспорта.");
+                    } else if (!has_capable) {
+                        std::cout << "[Внимание] Транспорт не может перевезти авто-заказ!\n";
+                        logger::log("[Авто-заказ] ОТКЛОНЕН ID " + std::to_string(order_counter) + ". Причина: превышены габариты или нехватка заряда.");
+                    } else if (!has_time) {
+                        std::cout << "[Внимание] Транспорт не успеет выполнить авто-заказ вовремя!\n";
+                        logger::log("[Авто-заказ] ОТКЛОНЕН ID " + std::to_string(order_counter) + ". Причина: нехватка времени на доставку.");
+                    } else {
+                        std::cout << "[Внимание] Отклонено по неизвестной причине.\n";
+                    }
                 }
                 order_counter++;
             }
@@ -315,27 +335,35 @@ int main() {
             float best_final_price = 0;
             
             float min_metric = 9999999999999.0f;
+            
+            bool has_free = false;
+            bool has_capable = false;
+            bool has_time = false;
 
             for (Transport* t : fleet) {
-                if (!t->isBusy() && t->canHandle(newOrder)) {
-                    float t_time = t->calculateTime(newOrder); 
-                    
-                    if (t_time <= (max_time / 60.0f)) {
-                        if (strat_input == 1) { 
-                            if (t_time < min_metric) {
-                                min_metric = t_time;
-                                best_transport = t;
-                                best_final_time = t_time;
-                                best_final_price = t->calculatePrice(newOrder); 
-                            }
-                        } 
-                        else if (strat_input == 2) { 
-                            float t_price = t->calculatePrice(newOrder);
-                            if (t_price < min_metric) {
-                                min_metric = t_price;
-                                best_transport = t;
-                                best_final_time = t_time;
-                                best_final_price = t_price; 
+                if (!t->isBusy()) {
+                    has_free = true;
+                    if (t->canHandle(newOrder)) {
+                        has_capable = true;
+                        float t_time = t->calculateTime(newOrder); 
+                        if (t_time <= (max_time / 60.0f)) {
+                            has_time = true;
+                            if (strat_input == 1) { 
+                                if (t_time < min_metric) {
+                                    min_metric = t_time;
+                                    best_transport = t;
+                                    best_final_time = t_time;
+                                    best_final_price = t->calculatePrice(newOrder); 
+                                }
+                            } 
+                            else if (strat_input == 2) { 
+                                float t_price = t->calculatePrice(newOrder);
+                                if (t_price < min_metric) {
+                                    min_metric = t_price;
+                                    best_transport = t;
+                                    best_final_time = t_time;
+                                    best_final_price = t_price; 
+                                }
                             }
                         }
                     }
@@ -356,8 +384,18 @@ int main() {
                 best_transport->setPosition(newOrder.getDestination());
                 
             } else {
-                std::cout << "\nВнимание: нет свободного транспорта.\n";
-                logger::log("[Одиночный заказ] ОТКЛОНЕН ID " + std::to_string(order_counter) + ". Причина: нет свободного или подходящего транспорта.");
+                if (!has_free) {
+                    std::cout << "\nВнимание: нет свободного транспорта.\n";
+                    logger::log("[Одиночный заказ] ОТКЛОНЕН ID " + std::to_string(order_counter) + ". Причина: нет свободного транспорта.");
+                } else if (!has_capable) {
+                    std::cout << "\nВнимание: нет транспорта, способного перевезти такой груз.\n";
+                    logger::log("[Одиночный заказ] ОТКЛОНЕН ID " + std::to_string(order_counter) + ". Причина: превышены габариты или нехватка заряда.");
+                } else if (!has_time) {
+                    std::cout << "\nВнимание: ни один транспорт не успеет выполнить заказ вовремя.\n";
+                    logger::log("[Одиночный заказ] ОТКЛОНЕН ID " + std::to_string(order_counter) + ". Причина: нехватка времени на доставку.");
+                } else {
+                    std::cout << "\nВнимание: заказ отклонен по неизвестной причине.\n";
+                }
             }
             order_counter++;
         }
@@ -391,4 +429,4 @@ int main() {
     fleet.clear();
 
     return 0;
-}
+}`
