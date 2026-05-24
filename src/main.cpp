@@ -303,10 +303,9 @@ int main() {
             int max_time = UI::getIntInput("Макс. время доставки (минуты): ");
             int x = UI::getCoordInput("Координата X: ");
             int y = UI::getCoordInput("Координата Y: ");
-            int cust_type = UI::getCustomerTypeChoice();
 
             coords dest = {x, y};
-            Order newOrder(order_counter, w, v, dest, max_time, cust_type); 
+            Order newOrder(order_counter, w, v, dest, max_time, 3); 
 
             logger::log("[Одиночный заказ] Сформирован ID " + std::to_string(order_counter) + " | Вес: " + std::to_string(w) + " | Объем: " + std::to_string(v) + " | Координаты: " + std::to_string(x) + "," + std::to_string(y));
 
