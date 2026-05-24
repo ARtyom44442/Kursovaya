@@ -274,30 +274,34 @@ int main() {
 
             int strat_input = UI::getStrategyChoice();
             Transport* best_transport = nullptr;
-            float best_metric = std::numeric_limits<float>::max();
             float best_final_time = 0;
             float best_final_price = 0;
+            
+            float min_metric = 9999999999999.0f;
 
             for (Transport* t : fleet) {
-                if (t->isBusy()) continue;
-
-                if (t->canHandle(newOrder)) {
-                    float current_time = t->calculateTime(newOrder);
-                    float current_price = t->calculatePrice(newOrder);
-
-                    if (strat_input == 1) { 
-                        if (current_time < best_metric) {
-                            best_metric = current_time;
-                            best_transport = t;
-                            best_final_time = current_time;
-                            best_final_price = current_price;
-                        }
-                    } else if (strat_input == 2) { 
-                        if (current_price < best_metric) {
-                            best_metric = current_price;
-                            best_transport = t;
-                            best_final_time = current_time;
-                            best_final_price = current_price;
+                if (!t->isBusy() && t->canHandle(newOrder)) {
+                    float t_time = t->calculateTime(newOrder); 
+                    
+                    
+                    if (t_time <= (max_time / 60.0f)) {
+                        
+                        if (strat_input == 1) { 
+                            if (t_time < min_metric) {
+                                min_metric = t_time;
+                                best_transport = t;
+                                best_final_time = t_time;
+                                best_final_price = t->calculatePrice(newOrder); 
+                            }
+                        } 
+                        else if (strat_input == 2) { 
+                            float t_price = t->calculatePrice(newOrder);
+                            if (t_price < min_metric) {
+                                min_metric = t_price;
+                                best_transport = t;
+                                best_final_time = t_time;
+                                best_final_price = t_price; 
+                            }
                         }
                     }
                 }
@@ -317,7 +321,7 @@ int main() {
             } else {
                 std::cout << "\nВнимание: нет свободного транспорта.\n";
             }
-            order_counter++; 
+            order_counter++;
         }
         else if (choice == 3) {
             float w = UI::getFloatInput("Вес (кг): ");
