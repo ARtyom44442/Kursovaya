@@ -6,7 +6,7 @@
 #include <iomanip>
 
 Transport::Transport(std::string name, float s, float max_w, float max_v, coords pos)
-    : type_name(name), speed(s), max_weight(max_w), max_vol(max_v), current_pos(pos), busy(false) {}
+    : type_name(name), speed(s), max_weight(max_w), max_vol(max_v), current_pos(pos), busy(false), time_to_free(0) {}
 
 bool Transport::canHandle(Order& order) {
     return order.getWeight() <= max_weight && order.getVol() <= max_vol;

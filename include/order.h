@@ -13,7 +13,7 @@ private:
     float vol;
     coords destination;
     int max_time;
-    int customer_type; //  1 = VIP, 2 = Express, 3 = Econom
+    int customer_type; 
 public:
     Order(int id, float w, float v, coords d, int mt, int type = 3);
 
@@ -34,9 +34,11 @@ public:
 
     void PrintStats();
 };
+
 namespace UI {
     float getFloatInput(const std::string& prompt);
     int getIntInput(const std::string& prompt);
+    int getCoordInput(const std::string& prompt); 
     int getStrategyChoice();
     int getCustomerTypeChoice();
 }
