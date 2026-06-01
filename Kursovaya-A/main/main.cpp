@@ -84,7 +84,7 @@ void performGroupDelivery(const std::vector<Transport*>& fleet, std::vector<Orde
     
     if (filteredOrders.empty()) {
         std::cout << "Нет подходящих заказов для групповой доставки (только Express и Economy).\n";
-        logger::log("[Группа] Нет заказов Express/Economy для групповой доставки.");
+        logger::log("[Группа] Нет заказов для групповой доставки.");
         return;
     }
     
@@ -92,7 +92,7 @@ void performGroupDelivery(const std::vector<Transport*>& fleet, std::vector<Orde
         return a.getCustomerType() < b.getCustomerType();
     });
     
-    std::cout << "\nПорядок доставки в группе (Express первые, потом Economy):\n";
+    std::cout << "\nПорядок доставки в группе (Экспрес-класс первые, потом Эконом-класс):\n";
     for (const auto& ord : filteredOrders) {
         std::cout << "  ID " << ord.getID() << " - " << getCustomerTypeName(ord.getCustomerType()) << "\n";
     }
