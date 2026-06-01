@@ -1,22 +1,21 @@
 cmake_minimum_required(VERSION 3.10)
 project(SmartLogistics)
 
-
 include_directories(
-    include
-    datareader
+    .
     main
-    Transport
+    order
+    transport
     logs
-    "types of transport"
+    data
 )
 
 file(GLOB SOURCES 
-    "datareader/*.cpp"
-    "logs/*.cpp"
     "main/*.cpp"
-    "Transport/*.cpp"
-    "types of transport/*.cpp"
+    "order/*.cpp"
+    "transport/*.cpp"
+    "logs/*.cpp"
+    "data/*.cpp"
 )
 
 add_executable(my_app ${SOURCES})
